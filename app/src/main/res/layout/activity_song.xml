@@ -230,6 +230,7 @@ android:scaleType="fitXY" -> 가로, 세로 비율에 상관없이 ImageView에 
 
     </LinearLayout>
 
+
     <ImageView
         android:id="@+id/music_related_iv"
         android:layout_width="45dp"

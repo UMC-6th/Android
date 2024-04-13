@@ -29,6 +29,7 @@ class SongActivity : AppCompatActivity(){ // : 은 상속받는다는 뜻  //액
         }
     }
 
+
     fun setPlayerStatus(isPlaying : Boolean) {
         if(isPlaying){
             binding.musicMiniplayerIv.visibility = View.VISIBLE

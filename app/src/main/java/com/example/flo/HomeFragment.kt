@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.flo.databinding.FragmentHomeBinding
 
+
 class HomeFragment : Fragment() {
 
     lateinit var binding: FragmentHomeBinding

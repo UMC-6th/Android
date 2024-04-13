@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.flo.databinding.FragmentAlbumBinding
 
+
 class AlbumFragment : Fragment() {
 
     lateinit var binding: FragmentAlbumBinding
