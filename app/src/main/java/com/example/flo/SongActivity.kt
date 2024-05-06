@@ -16,27 +16,41 @@ class SongActivity : AppCompatActivity() {
         binding = ActivitySongBinding.inflate(layoutInflater)   //초기화
         setContentView(binding.root)
         if(intent.hasExtra("title") &&intent.hasExtra("singer")){
-            binding.songTitleTv.text=intent.getStringExtra("title")
-            binding.songSingerTv.text=intent.getStringExtra("singer")
+            binding.songMusicTitleTv.text=intent.getStringExtra("title")
+            binding.songSingerNameTv.text=intent.getStringExtra("singer")
         }
         binding.songDownIb.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java).apply{
-                putExtra("songsong", binding.songTitleTv.text.toString())
+                putExtra("songsong", binding.songMusicTitleTv.text.toString())
             }
             setResult(Activity.RESULT_OK, intent)
             if(!isFinishing) finish()
         }
 
         initPlayPauseBtn()
+        initRepeatBtn()
+        initRandomBtn()
+    }
+    private fun initRepeatBtn(){
+        with(binding){
+            songRepeatOffIv.setOnClickListener {
+                songRepeatOffIv.visibility=View.GONE
+                songRepeatOnIv.visibility=View.VISIBLE
+            }
+            songRepeatOnIv.setOnClickListener {
+                songRepeatOnIv.visibility=View.GONE
+                songRepeatOffIv.visibility=View.VISIBLE
+            }
+        }
     }
     private fun initPlayPauseBtn(){
         with(binding){
-            songPlayButtonIv.setOnClickListener{
-                songPlayButtonIv.visibility= View.GONE
+            songMiniplayerIv.setOnClickListener{
+                songMiniplayerIv.visibility= View.GONE
                 songPauseIv.visibility= View.VISIBLE
             }
             songPauseIv.setOnClickListener{
-                songPlayButtonIv.visibility= View.VISIBLE
+                songMiniplayerIv.visibility= View.VISIBLE
                 songPauseIv.visibility= View.GONE
             }
         }
@@ -44,24 +58,36 @@ class SongActivity : AppCompatActivity() {
         binding.songDownIb.setOnClickListener {
             finish()
         }
-        binding.songPlayButtonIv.setOnClickListener {
+        binding.songMiniplayerIv.setOnClickListener {
             setPlayerStatus(false)
         }
         binding.songPauseIv.setOnClickListener {
             setPlayerStatus(true)
         }
         if(intent.hasExtra("title")&&intent.hasExtra("singer")){
-            binding.songTitleTv.text=intent.getStringExtra("title")
-            binding.songSingerTv.text=intent.getStringExtra("singer")
+            binding.songMusicTitleTv.text=intent.getStringExtra("title")
+            binding.songSingerNameTv.text=intent.getStringExtra("singer")
+        }
+    }
+    private fun initRandomBtn(){
+        with(binding){
+            songRandomOffIv.setOnClickListener {
+                songRandomOffIv.visibility = View.GONE
+                songRandomOnIv.visibility = View.VISIBLE
+            }
+            songRandomOnIv.setOnClickListener {
+                songRandomOffIv.visibility = View.VISIBLE
+                songRandomOnIv.visibility = View.GONE
+            }
         }
     }
     fun setPlayerStatus(isPlaying : Boolean) {
         if(isPlaying){
-            binding.songPlayButtonIv.visibility= View.VISIBLE
+            binding.songMiniplayerIv.visibility= View.VISIBLE
             binding.songPauseIv.visibility=View.GONE
         }
         else {
-            binding.songPlayButtonIv.visibility=View.GONE
+            binding.songMiniplayerIv.visibility=View.GONE
             binding.songPauseIv.visibility=View.VISIBLE
         }
     }
