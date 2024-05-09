@@ -23,13 +23,14 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_FLO)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initBottomNavigation()
 
         val song = Song(binding.mainMiniplayerTitileTv.text.toString(),
-            binding.mainMiniplayerSingerTv.text.toString())
+            binding.mainMiniplayerSingerTv.text.toString(),0,60,false)
 
         Log.d("Song", "제목 : ${song.title} / 가수 : ${song.singer}")
 
@@ -37,7 +38,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", song.title)
             intent.putExtra("singer", song.singer)
-            getResultText.launch(intent)
+            intent.putExtra("second", song.second)
+            intent.putExtra("playTime", song.playTime)
+            intent.putExtra("isPlaying", song.isPlaying)
+            startActivity(intent)
         }
     }
 
