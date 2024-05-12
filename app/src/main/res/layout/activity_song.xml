@@ -133,7 +133,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@+id/song_album_iv"
         app:layout_constraintStart_toStartOf="@+id/song_album_iv"
-        app:layout_constraintTop_toBottomOf="@+id/song_music_lyrics_02_iv">
+        app:layout_constraintTop_toBottomOf="@+id/song_music_progress_sb">
 
         <ImageView
             android:id="@+id/song_like_iv"
@@ -150,17 +150,36 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/song_progressbar_backgroud_view"
+    <SeekBar
+        android:id="@+id/song_music_progress_sb"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="null"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:progress="0"
+        android:progressBackgroundTint="@color/song_player_bg"
+        android:progressTint="@color/song_player"
+        android:thumb="@color/transparent"
+        android:max="100000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout"/>
+
+//
+    <ImageButton
+        android:id="@+id/song_play_bar_ib"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:background="@color/gray_color"
         android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="20dp"
-        android:background="@color/gray_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/song_like_iv_layout" />
+
 
     <View
         android:id="@+id/song_progressbar_view"
@@ -168,9 +187,9 @@
         android:layout_height="2dp"
         android:layout_marginStart="20dp"
         android:background="@color/select_color"
-        app:layout_constraintBottom_toBottomOf="@+id/song_progressbar_backgroud_view"
+        app:layout_constraintBottom_toBottomOf="@+id/song_play_bar_ib"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/song_progressbar_backgroud_view" />
+        app:layout_constraintTop_toTopOf="@+id/song_play_bar_ib" />
 
     <TextView
         android:id="@+id/song_start_time_tv"
@@ -178,8 +197,8 @@
         android:layout_height="wrap_content"
         android:text="00:08"
         android:textColor="@color/select_color"
-        app:layout_constraintStart_toStartOf="@+id/song_progressbar_backgroud_view"
-        app:layout_constraintTop_toBottomOf="@+id/song_progressbar_backgroud_view" />
+        app:layout_constraintStart_toStartOf="@+id/song_play_bar_ib"
+        app:layout_constraintTop_toBottomOf="@+id/song_play_bar_ib" />
 
 
     <TextView
@@ -188,8 +207,8 @@
         android:layout_height="wrap_content"
         android:text="01:00"
         android:textColor="@color/gray_color"
-        app:layout_constraintEnd_toEndOf="@+id/song_progressbar_backgroud_view"
-        app:layout_constraintTop_toBottomOf="@+id/song_progressbar_backgroud_view" />
+        app:layout_constraintEnd_toEndOf="@+id/song_play_bar_ib"
+        app:layout_constraintTop_toBottomOf="@+id/song_play_bar_ib" />
 
 
     <LinearLayout
@@ -233,24 +252,50 @@
 
 
     <ImageView
-        android:id="@+id/song_repeat_iv"
+        android:id="@+id/song_repeat_off_iv"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginEnd="30dp"
         android:src="@drawable/nugu_btn_repeat_inactive"
         app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
         app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
-        app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        android:visibility="visible"/>
 
     <ImageView
-        android:id="@+id/song_random_iv"
+        android:id="@+id/song_repeat_on_iv"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/nugu_btn_repeat_inactive"
+        app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+        app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        app:tint="@color/purple_500"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/song_random_off_iv"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="30dp"
         android:src="@drawable/nugu_btn_random_inactive"
         app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
         app:layout_constraintStart_toEndOf="@+id/song_player_layout"
-        app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/song_random_on_iv"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:src="@drawable/nugu_btn_random_inactive"
+        app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+        app:layout_constraintStart_toEndOf="@+id/song_player_layout"
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        android:visibility="gone"
+        app:tint="@color/purple_500"/>
 
     <ImageView
         android:id="@+id/song_instagram_iv"
@@ -258,7 +303,7 @@
         android:layout_height="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/btn_actionbar_instagram"
+        android:src="@drawable/btn_player_go_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
