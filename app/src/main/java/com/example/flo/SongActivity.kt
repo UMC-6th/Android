@@ -14,9 +14,9 @@ import com.google.gson.Gson
 class SongActivity : AppCompatActivity() {
 
     //전역변수
-    lateinit var binding : ActivitySongBinding
-    lateinit var song : Song
-    lateinit var timer : Timer
+    private lateinit var binding : ActivitySongBinding
+    private lateinit var song : Song
+    private lateinit var timer : Timer
     private var mediaPlayer: MediaPlayer? = null //?=null 사용 나중에 해제시키기 위함
     private var gson: Gson = Gson()
 
@@ -25,18 +25,24 @@ class SongActivity : AppCompatActivity() {
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initSong()
-        setPlayer(song)
-
+        if(intent.hasExtra("title")&&intent.hasExtra("singer")){
+            binding.songMusicTitleTv.text = intent.getStringExtra("title")
+            binding.songSingerNameTv.text = intent.getStringExtra("singer")
+            }
 
         binding.songDownIb.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java).apply {
+            val intent = Intent(this, MainActivity::class.java).apply{
                 putExtra("songsong", binding.songMusicTitleTv.text.toString())
             }
             setResult(Activity.RESULT_OK, intent)
-            if (!isFinishing) finish()
+            if(!isFinishing) finish()
         }
         initplayPauseBtn()
+        initRepeatBtn()
+        initRandomBtn()
+        retrieveIntentData()
+        setPlayer(song)
+
 
     }
 
@@ -67,18 +73,48 @@ class SongActivity : AppCompatActivity() {
             finish()
         }
         binding.songMiniplayerIv.setOnClickListener {
-            setPlayerStatus(false)
-        }
-        binding.songPauseIv.setOnClickListener {
             setPlayerStatus(true)
         }
-        if(intent.hasExtra("title")&&intent.hasExtra("singer")){
-            binding.songMusicTitleTv.text=intent.getStringExtra("title")
-            binding.songSingerNameTv.text=intent.getStringExtra("singer")
+        binding.songPauseIv.setOnClickListener {
+            setPlayerStatus(false)
+        }
+        if(intent.hasExtra("title")&&intent.hasExtra("singer")) {
+            binding.songMusicTitleTv.text = intent.getStringExtra("title")
+            binding.songSingerNameTv.text = intent.getStringExtra("singer")
+        }
+    }
+    private fun initRandomBtn(){
+        with(binding){
+            songRandomOffIv.setOnClickListener {
+                songRandomOffIv.visibility = View.GONE
+                songRandomOnIv.visibility = View.VISIBLE
+            }
+            songRandomOnIv.setOnClickListener {
+                songRandomOffIv.visibility = View.VISIBLE
+                songRandomOnIv.visibility = View.GONE
+            }
         }
     }
 
-    private fun initSong(){
+    private fun setPlayerStatus(isPlaying : Boolean) {
+        song.isPlaying = isPlaying
+        timer.isPlaying = isPlaying
+
+        if(isPlaying){
+            binding.songMiniplayerIv.visibility= View.GONE
+            binding.songPauseIv.visibility=View.VISIBLE
+            mediaPlayer?.start()
+        }
+        else {
+            binding.songMiniplayerIv.visibility=View.VISIBLE
+            binding.songPauseIv.visibility=View.GONE
+            if(mediaPlayer?.isPlaying == true){
+                mediaPlayer?.pause()
+            }
+        }
+    }
+
+    private fun retrieveIntentData(){
         if(intent.hasExtra("title") && intent.hasExtra("singer")){
             song = Song(
                 intent.getStringExtra("title")!!,
@@ -99,37 +135,9 @@ class SongActivity : AppCompatActivity() {
         binding.songEndTimeTv.text = String.format("%02d:%02d",song.playTime / 60, song.playTime % 60)
         binding.songMusicProgressSb.progress = (song.second * 1000 / song.playTime)
         val music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music)
+        mediaPlayer = MediaPlayer.create(this@SongActivity, R.raw.music_lilac)
 
         setPlayerStatus(song.isPlaying)
-    }
-    private fun initRandomBtn(){
-        with(binding){
-            songRandomOffIv.setOnClickListener {
-                songRandomOffIv.visibility = View.GONE
-                songRandomOnIv.visibility = View.VISIBLE
-            }
-            songRandomOnIv.setOnClickListener {
-                songRandomOffIv.visibility = View.VISIBLE
-                songRandomOnIv.visibility = View.GONE
-            }
-        }
-    }
-    private fun setPlayerStatus(isPlaying : Boolean) {
-        song.isPlaying = isPlaying
-        timer.isPlaying = isPlaying
-        if(isPlaying){
-            binding.songMiniplayerIv.visibility= View.GONE
-            binding.songPauseIv.visibility=View.VISIBLE
-            mediaPlayer?.start()
-        }
-        else {
-            binding.songMiniplayerIv.visibility=View.VISIBLE
-            binding.songPauseIv.visibility=View.GONE
-            if(mediaPlayer?.isPlaying == true){
-                mediaPlayer?.pause()
-            }
-        }
     }
 
     private fun startTimer(){

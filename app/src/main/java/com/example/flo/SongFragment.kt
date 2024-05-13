@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.flo.databinding.FragmentDetailBinding
 import com.example.flo.databinding.FragmentSongBinding
 
 class SongFragment : Fragment() {
@@ -15,7 +14,7 @@ class SongFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSongBinding.inflate(inflater, container, false)
 
         initMixBtn()
@@ -24,13 +23,13 @@ class SongFragment : Fragment() {
 
     private fun initMixBtn() {
         with(binding) {
-            songMixonTg.setOnClickListener {
-                songMixoffTg.visibility = android.view.View.GONE
-                songMixonTg.visibility = android.view.View.VISIBLE
+            songMixoffTg.setOnClickListener {
+                songMixoffTg.visibility = View.GONE
+                songMixonTg.visibility = View.VISIBLE
             }
             songMixonTg.setOnClickListener {
-                songMixoffTg.visibility = android.view.View.GONE
-                songMixonTg.visibility = android.view.View.VISIBLE
+                songMixonTg.visibility = View.GONE
+                songMixoffTg.visibility = View.VISIBLE
             }
         }
     }

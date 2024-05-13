@@ -2,11 +2,11 @@ package com.example.flo
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivityMainBinding
 import com.google.gson.Gson
 
@@ -18,29 +18,6 @@ class MainActivity : AppCompatActivity() {
 
     private var gson: Gson = Gson()
 
-    override fun onCreate(savedInstanceState: Bundle?){
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        initBottomNavigation()
-
-        binding.mainPlayerCl.setOnClickListener{
-            val intent = Intent(this, SongActivity::class.java)
-        }
-
-        binding.mainPlayerCl.setOnClickListener{
-            val intent = Intent(this,SongActivity::class.java)
-            intent.putExtra("title",song.title)
-            intent.putExtra("singer",song.singer)
-            intent.putExtra("song",song.second)
-            intent.putExtra("playTime",song.playTime)
-            intent.putExtra("isPlaying",song.isPlaying)
-            intent.putExtra("music",song.music)
-            startActivity(intent)
-        }
-    }
-
     private val getResultText = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ){result->
@@ -49,6 +26,32 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, returnString, Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_FLO)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        initBottomNavigation()
+
+        val song = Song(binding.mainMiniplayerTitleTv.text.toString(),
+            binding.mainMiniplayerSingerTv.text.toString(),0,60,false)
+
+        Log.d("Song", "제목 : ${song.title} / 가수 : ${song.singer}")
+
+        binding.mainPlayerCl.setOnClickListener{
+            val intent = Intent(this,SongActivity::class.java)
+            intent.putExtra("title",song.title)
+            intent.putExtra("singer",song.singer)
+            intent.putExtra("second",song.second)
+            intent.putExtra("playTime",song.playTime)
+            intent.putExtra("isPlaying",song.isPlaying)
+            intent.putExtra("music",song.music)
+            getResultText.launch(intent)
+        }
+    }
+
 
     private fun initBottomNavigation(){
 
@@ -63,8 +66,6 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, HomeFragment())
                         .commitAllowingStateLoss()
-                    Toast.makeText(applicationContext, "Home", Toast.LENGTH_SHORT).show()
-                    Log.d("bottommmm","Home")
                     return@setOnItemSelectedListener true
                 }
 
@@ -72,24 +73,18 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, LookFragment())
                         .commitAllowingStateLoss()
-                    Toast.makeText(applicationContext, "Look", Toast.LENGTH_SHORT).show()
-                    Log.d("bottommmm","look")
                     return@setOnItemSelectedListener true
                 }
                 R.id.searchFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, SearchFragment())
                         .commitAllowingStateLoss()
-                    Toast.makeText(applicationContext, "Search", Toast.LENGTH_SHORT).show()
-                    Log.d("bottommmm","search")
                     return@setOnItemSelectedListener true
                 }
                 R.id.lockerFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, LockerFragment())
                         .commitAllowingStateLoss()
-                    Toast.makeText(applicationContext, "Locker", Toast.LENGTH_SHORT).show()
-                    Log.d("bottommmm","locker")
                     return@setOnItemSelectedListener true
                 }
             }
@@ -109,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         val songJson = sharedPreferences.getString("songData", null)
 
         song = if(songJson == null){
-            Song("라일락", "아이우(IU)", 0, 60, false, "music_lilac")
+            Song("라일락", "아이유(IU)", 0, 60, false, "music_lilac")
         }else {
             gson.fromJson(songJson, song::class.java)
         }

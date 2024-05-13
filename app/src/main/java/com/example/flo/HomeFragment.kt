@@ -1,6 +1,5 @@
 package com.example.flo
 
-import android.content.AbstractThreadedSyncAdapter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,9 +12,7 @@ import com.example.flo.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
-    private lateinit var sliderHandler: Handler
-    private var sliderRunnable: Runnable? = null
+    lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,11 +53,15 @@ class HomeFragment : Fragment() {
         val indicator = binding.Indicator;
         indicator.setViewPager(binding.homePannelBackgroundVp);
         autoSlide()
+
         return binding.root
     }
 
+    private var sliderHandler = Handler(Looper.getMainLooper())
+    private var sliderRunnable: Runnable? = null
+
     private fun autoSlide() {
-        Runnable {
+        sliderRunnable = Runnable {
             val viewPager = binding.homePannelBackgroundVp
             viewPager.adapter?.let { adapter ->
                 viewPager.currentItem =
@@ -71,7 +72,7 @@ class HomeFragment : Fragment() {
                     }
             }
             sliderHandler.postDelayed(sliderRunnable!!, 3000)
-        }.also { sliderRunnable = it }
+        }
         sliderHandler.post(sliderRunnable!!)
     }
 

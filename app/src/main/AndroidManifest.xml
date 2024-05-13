@@ -20,11 +20,8 @@
             </intent-filter>
 
         </activity>
-        <activity
-            android:name=".SongActivity"
-            android:exported="true">
+        <activity android:name = "com.example.flo.SongActivity"/>
 
-        </activity>
     </application>
 
 </manifest>
