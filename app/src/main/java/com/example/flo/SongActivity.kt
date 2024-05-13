@@ -2,17 +2,22 @@ package com.example.flo
 
 import android.app.Activity
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivitySongBinding
+import com.google.gson.Gson
 
 class SongActivity : AppCompatActivity() {
 
     lateinit var binding : ActivitySongBinding
     lateinit var song: Song
     lateinit var timer:Timer
+    private var mediaPlayer: MediaPlayer? = null //activity가 소멸될 때 미디어플레이어를 해제 시켜줘야해서 null사용
+    private var gson: Gson = Gson()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)  //선언
@@ -94,16 +99,15 @@ class SongActivity : AppCompatActivity() {
         if(isPlaying){
             binding.songMiniplayerIv.visibility= View.GONE
             binding.songPauseIv.visibility=View.VISIBLE
+            mediaPlayer?.start()
         }
         else {
             binding.songMiniplayerIv.visibility=View.VISIBLE
             binding.songPauseIv.visibility=View.GONE
+            if(mediaPlayer?.isPlaying == true){
+                mediaPlayer?.pause()
+            }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        timer.interrupt()
     }
 
     private fun initSong(){
@@ -113,7 +117,8 @@ class SongActivity : AppCompatActivity() {
                 intent.getStringExtra("singer")!!,
                 intent.getIntExtra("second",0),
                 intent.getIntExtra("playTime", 0),
-                intent.getBooleanExtra("isPlaying",false)
+                intent.getBooleanExtra("isPlaying",false),
+                intent.getStringExtra("music")!!
             )
         }
         startTimer()
@@ -125,9 +130,9 @@ class SongActivity : AppCompatActivity() {
         binding.songStartTimeTv.text = String.format("%02d:%02d", song.second / 60, song.second % 60)
         binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime / 60, song.playTime % 60)
         binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
-
+        val music = resources.getIdentifier(song.music,"raw",this.packageName)
+        mediaPlayer = MediaPlayer.create(this,music)
         setPlayerStatus(song.isPlaying)
-
     }
 
     private fun startTimer(){
@@ -171,4 +176,26 @@ class SongActivity : AppCompatActivity() {
             }
         }
     }
+    // 사용자가 포커스를 잃었을 때 음악이 중지
+    override fun onPause() {
+        super.onPause()
+        setPlayerStatus(false)
+        song.second = ((binding.songProgressSb.progress * song.playTime)/100)/1000
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE) //SharedPreference란 내부 저장소에 데이터를 저장할 수 있도록 함. 앱이 종료되었다가 다시 실행되도 저장된 값을 다시 사용할 수 있음
+        val editor = sharedPreferences.edit() //에디터
+         //제이슨 포멧으로 한 번에 넣어줌. 제이슨이란 데이터 표현 표준. 보통 자바 객체를 다른 곳으로 전달할 때 제이슨 포멧으로 보냄
+         //song 객체를 제이슨으로 변환 시키기 위해 지슨을 사용. 자바 객체를 제이슨으로, 제이슨을 자바 객체로 변환 시켜줌
+        val songJson = gson.toJson(song)
+        editor.putString("songData", songJson)
+
+        editor.apply() //apply까지 해야 실제 내부 저장소에 저장이 됨
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timer.interrupt()
+        mediaPlayer?.release() //미디어플레이어가 갖고 있던 리소스 해제
+        mediaPlayer = null //미디어 플레이어 해제
+    }
+
 }

@@ -8,10 +8,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.flo.databinding.ActivityMainBinding
+import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
+
+    private var song: Song = Song()
+    private var gson: Gson = Gson()
 
     private val getResultText = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -29,9 +33,6 @@ class MainActivity : AppCompatActivity() {
 
         initBottomNavigation()
 
-        val song = Song(binding.mainMiniplayerTitileTv.text.toString(),
-            binding.mainMiniplayerSingerTv.text.toString(),0,60,false)
-
         Log.d("Song", "제목 : ${song.title} / 가수 : ${song.singer}")
 
         binding.mainPlayerCl.setOnClickListener{
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("second", song.second)
             intent.putExtra("playTime", song.playTime)
             intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("music",song.music)
             startActivity(intent)
         }
     }
@@ -83,4 +85,24 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
+
+    private fun setMiniPlayer(song:Song){
+        binding.mainMiniplayerTitileTv.text = song.title
+        binding.mainMiniplayerSingerTv.text = song.singer
+        binding.mainProgressSb.progress = (song.second*100000)/song.playTime
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val songJson = sharedPreferences.getString("songData", null)
+
+        song = if(songJson == null){
+            Song("라일락", "아이유(IU)", 0, 60, false, "music_lilac")
+        }else {
+            gson.fromJson(songJson, Song::class.java)
+        }
+        setMiniPlayer(song)
+    }
+
 }
