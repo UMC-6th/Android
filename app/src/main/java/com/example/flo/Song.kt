@@ -8,3 +8,4 @@ data class Song(
     var isPlaying : Boolean = false,
     var music : String = ""
 )
+
