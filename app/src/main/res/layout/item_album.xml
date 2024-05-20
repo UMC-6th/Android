@@ -18,8 +18,7 @@
             android:id="@+id/item_album_cover_img_iv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/img_album_exp2"/>
+            android:scaleType="fitCenter"/>
     </androidx.cardview.widget.CardView>
 
     <ImageView
@@ -37,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="LILAC"
+        android:text="Title"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@id/item_album_cover_img_cardview"
@@ -48,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:text="아이유 (IU)"
+        android:text="Artist"
         android:textColor="#a8a8a8"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@id/item_album_cover_img_cardview"

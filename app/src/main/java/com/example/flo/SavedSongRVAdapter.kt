@@ -5,47 +5,58 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.databinding.ItemSongBinding
 
-class SavedSongRVAdapter(private val albumList: ArrayList<Song>): RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
+class SavedSongRVAdapter(private val albumList: ArrayList<Song>) : RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
 
-    interface MyItemClickListner{
+    interface MyItemClickListener {
         fun onItemClick(song: Song)
         fun onRemoveSong(position: Int)
     }
 
-    private lateinit var mItemClickListener:MyItemClickListner
-    fun setMyItemClickListner(itemClickListener:MyItemClickListner){
+    private lateinit var mItemClickListener: MyItemClickListener
+
+    fun setMyItemClickListener(itemClickListener: MyItemClickListener) {
         mItemClickListener = itemClickListener
     }
-
-    fun addItem(song: Song){
+    fun addItem(song: Song) {
         albumList.add(song)
-        notifyDataSetChanged()
+        notifyItemInserted(albumList.size)
     }
 
-    fun removeItem(position: Int){
+    fun removeItem(position: Int) {
         albumList.removeAt(position)
-        notifyDataSetChanged()
+        notifyItemRemoved(position)
     }
 
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): SavedSongRVAdapter.ViewHolder {
-        val binding: ItemSongBinding = ItemSongBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding: ItemSongBinding = ItemSongBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int = albumList.size
 
-    override fun onBindViewHolder(holder: SavedSongRVAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(albumList[position])
+        holder.binding.itemSongMoreIv.setOnClickListener {
+            mItemClickListener.onRemoveSong(position)
+        }
+        holder.itemView.setOnClickListener {
+            mItemClickListener.onItemClick(albumList[position])
+        }
         holder.binding.itemSongMoreIv.setOnClickListener{mItemClickListener.onRemoveSong(position)}
     }
 
-    inner class ViewHolder(val binding: ItemSongBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(song: Song){
-            binding.itemSongTitleTv.text= song.title
-            binding.itemSongSingerTv.text= song.singer
-            binding.itemSongImgIv.setImageResource(song.coverImg!!)
+    inner class ViewHolder(val binding: ItemSongBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(song: Song) {
+            binding.itemSongTitleTv.text = song.title ?: ""
+            binding.itemSongSingerTv.text = song.singer ?: ""
+            // coverImg가 null이 아닌 경우 이미지 설정
+            song.coverImg?.let { coverImg ->
+                binding.itemSongImgIv.setImageResource(coverImg)
+            } ?: run {
+                // coverImg가 null일 때 기본 이미지 설정
+                binding.itemSongImgIv.setImageResource(R.drawable.img_album_exp2)
+            }
         }
     }
 }
