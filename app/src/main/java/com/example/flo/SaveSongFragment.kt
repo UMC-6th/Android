@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flo.databinding.FragmentLockerSavedsongBinding
 
-class SavedSongFragment : Fragment() {
+class SaveSongFragment : Fragment() {
 
     private lateinit var binding: FragmentLockerSavedsongBinding
     private lateinit var songRVAdapter: SongLockerRVAdapter

@@ -51,9 +51,9 @@ class LockerFragment : Fragment() {
         // 리스너 설정
         albumLockerRVAdapter.setMyItemClickListener(object : AlbumLockerRVAdapter.MyItemClickListener {
 
-            fun onItemClick(album: Album){
-                changeSongfragment(album)
-            }
+//            fun onItemClick(album: Album){
+//                changeSongfragment(album)
+//            }
 
             override fun onRemoveAlbum(position: Int) {
                 albumLockerRVAdapter.removeItem(position)
