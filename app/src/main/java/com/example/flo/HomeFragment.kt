@@ -14,9 +14,21 @@ import com.google.gson.Gson
 
 class HomeFragment : Fragment() {
 
+    interface OnPlayClickListener {
+        fun onPlayClick(songData: Song)
+
+    }
+    private var listener: OnPlayClickListener? = null
+
+    fun onPlayClick(album: Album) {
+        if (activity is MainActivity) {
+            val songData: Song = album.songs!!.get(0)
+            (activity as MainActivity).onPlayClick(songData) // MainActivity로 Song 데이터 전달
+        }
+    }
+
     lateinit var binding: FragmentHomeBinding
     private var albumDatas = ArrayList<Album>()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,68 +37,75 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-//        binding.homeMainAlbumImg1Iv.setOnClickListener {
-//            initAlbumFragment(
-//                binding.homeMainAlbumTitleTv.text.toString(),
-//                binding.homeMainAlbumSingerTv.text.toString()
-//            )
-//        }
-//        binding.homeMainAlbumImg2Iv.setOnClickListener {
-//            initAlbumFragment(
-//                binding.homeMainAlbumTitle2Tv.text.toString(),
-//                binding.homeMainAlbumSinger2Tv.text.toString()
-//            )
-//        }
 
-        //데이터 리스트 생성 더미 데이터
+        // 더미 데이터 생성
         albumDatas.apply {
-            add(Album("Butter","방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_1))
-            add(Album("Next Level", "에스파 (AESPA)", R.drawable.img_album_exp3))
-            add(Album("Boy with Luv", "방탄소년단 (BTS)", R.drawable.img_album_exp4))
-            add(Album("BBoom BBoom", "모모랜드 (MOMOLAND)", R.drawable.img_album_exp5))
-            add(Album("Weekend", "태연 (Tae Yeon)", R.drawable.img_album_exp6))
+            val songArr = arrayListOf(Song("Lilac", "아이유 (IU)", 0, 96, false, "music_lilac"))
+
+            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp, songArr))
+            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_1, songArr))
+            add(Album("Next Level", "에스파 (AESPA)", R.drawable.img_album_exp3, songArr))
+            add(Album("Boy with Luv", "방탄소년단 (BTS)", R.drawable.img_album_exp4, songArr))
+            add(Album("BBoom BBoom", "모모랜드 (MOMOLAND)", R.drawable.img_album_exp5, songArr))
+            add(Album("Weekend", "태연 (Tae Yeon)", R.drawable.img_album_exp6, songArr))
         }
 
 
-        // 더미데이터랑 Adapter 연결
+        // 어댑터 설정
         val albumRVAdapter = AlbumRVAdapter(albumDatas)
-
-        // 리사이클러뷰에 어댑터를 연결
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
-
-        // 레이아웃 매니저 설정
         binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-        albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener{
-            override fun onItemClick(album: Album){
+        val manager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.homeTodayMusicAlbumRv.layoutManager= manager
+
+        albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener {
+//            override fun onItemClick(album: Album) {
+//                changeAlbumFragment(album)
+//            }
+//
+//            override fun onPlayClick(album: Album) {
+//                val songData: Song? = album.songs?.getOrNull(0)
+//                if (songData != null) {
+//                    val intent = Intent(context, SongActivity::class.java).apply {
+//                        putExtra("song", Gson().toJson(songData))
+//                    }
+//                    startActivity(intent)
+//                } else {
+//                    Log.e("HomeFragment", "No song data available for this album")
+//                }
+//            }
+
+            override fun onItemClick(album: Album) {
                 changeAlbumFragment(album)
             }
 
-//            override fun onRemoveAlbum(position: Int) {
-//                albumRVAdapter.removeItem(position)
-//            }
+            override fun onPlayClick(album: Album) {
+                if (activity is MainActivity) {
+                    val songData: Song = album.songs!!.get(0)
+                    (activity as MainActivity).onPlayClick(songData)// MainActivity로 Song 데이터 전달
+                }
+            }
         })
 
-
+        // 배너 설정
         val bannerAdapter = BannerVPAdapter(this)
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
         binding.homeBannerVp.adapter = bannerAdapter
         binding.homeBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.homeBannerVp.isUserInputEnabled = false // 사용자 입력 비활성화
 
+        // 인디케이터 설정
         val indicatorAdapter = IndicatorVPAdapter(this)
         indicatorAdapter.addFragment(IndicatorFragment(R.drawable.img_first_album_default))
         indicatorAdapter.addFragment(IndicatorFragment(R.drawable.img_album_exp4))
-        indicatorAdapter.addFragment(IndicatorFragment(R.drawable.img_album_exp3))
-        indicatorAdapter.addFragment(IndicatorFragment(R.drawable.img_album_exp5))
-        indicatorAdapter.addFragment(IndicatorFragment(R.drawable.img_album_exp6))
         binding.homePannelBackgroundVp.adapter = indicatorAdapter
         binding.homePannelBackgroundVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        val indicator = binding.Indicator;
-        indicator.setViewPager(binding.homePannelBackgroundVp);
+        binding.homePannelBackgroundVp.isUserInputEnabled = false // 사용자 입력 비활성화
+
+        val indicator = binding.Indicator
+        indicator.setViewPager(binding.homePannelBackgroundVp)
         autoSlide()
 
         return binding.root
@@ -122,20 +141,4 @@ class HomeFragment : Fragment() {
         }
         sliderHandler.post(sliderRunnable!!)
     }
-
-    private fun initAlbumFragment(titleTV : String, singerTV : String) {
-        with(binding) {
-            val albumFragment = AlbumFragment().apply {
-                arguments = Bundle().apply {
-                    putString("albumTitle", titleTV)
-                    putString("albumSinger", singerTV)
-                }
-            }
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.main_frm, albumFragment)
-                .addToBackStack(null)
-                .commit()
-        }
-    }
 }
-
