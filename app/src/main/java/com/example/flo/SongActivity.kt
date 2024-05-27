@@ -1,87 +1,90 @@
 package com.example.flo
 
+import SongDatabase
 import android.app.Activity
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivitySongBinding
 import com.google.gson.Gson
 
 class SongActivity : AppCompatActivity() {
 
-    lateinit var binding : ActivitySongBinding
-    lateinit var song: Song
-    lateinit var timer:Timer
-    private var mediaPlayer: MediaPlayer? = null //activity가 소멸될 때 미디어플레이어를 해제 시켜줘야해서 null사용
+    lateinit var binding: ActivitySongBinding
+    lateinit var timer: Timer
+    private var mediaPlayer: MediaPlayer? = null
     private var gson: Gson = Gson()
 
+    val songs = arrayListOf<Song>()
+    lateinit var songDB: SongDatabase
+    var nowPos = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)  //선언
-        binding = ActivitySongBinding.inflate(layoutInflater)   //초기화
+        super.onCreate(savedInstanceState)
+        binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        if(intent.hasExtra("title") &&intent.hasExtra("singer")){ //앨범 제목 표시
-            binding.songMusicTitleTv.text=intent.getStringExtra("title")
-            binding.songSingerNameTv.text=intent.getStringExtra("singer")
+
+        Log.d("SongActivity", "onCreate called")
+
+        try {
+            if (intent.hasExtra("title") && intent.hasExtra("singer")) {
+                binding.songMusicTitleTv.text = intent.getStringExtra("title")
+                binding.songSingerNameTv.text = intent.getStringExtra("singer")
+            }
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error setting title and singer: ${e.message}")
         }
-        //종료하면서 데이터 넘겨주기
-        binding.songDownIb.setOnClickListener{
-            val intent = Intent(this, MainActivity::class.java).apply{
+
+        binding.songDownIb.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java).apply {
                 putExtra("songsong", binding.songMusicTitleTv.text.toString())
             }
             setResult(Activity.RESULT_OK, intent)
-            if(!isFinishing) finish()
+            if (!isFinishing) finish()
         }
 
         initPlayPauseBtn()
         initRepeatBtn()
         initRandomBtn()
+        initClickListner()
+        initPlaylist()
         initSong()
-        setPlayer(song)
     }
-    private fun initRepeatBtn(){
-        with(binding){
+
+    private fun initRepeatBtn() {
+        with(binding) {
             songRepeatOffIv.setOnClickListener {
-                songRepeatOffIv.visibility=View.GONE
-                songRepeatOnIv.visibility=View.VISIBLE
+                songRepeatOffIv.visibility = View.GONE
+                songRepeatOnIv.visibility = View.VISIBLE
             }
             songRepeatOnIv.setOnClickListener {
-                songRepeatOnIv.visibility=View.GONE
-                songRepeatOffIv.visibility=View.VISIBLE
+                songRepeatOnIv.visibility = View.GONE
+                songRepeatOffIv.visibility = View.VISIBLE
             }
         }
     }
-    private fun initPlayPauseBtn(){
-        with(binding){
-            songMiniplayerIv.setOnClickListener{
-                songMiniplayerIv.visibility= View.GONE
-                songPauseIv.visibility= View.VISIBLE
-            }
-            songPauseIv.setOnClickListener{
-                songMiniplayerIv.visibility= View.VISIBLE
-                songPauseIv.visibility= View.GONE
-            }
-        }
 
-        binding.songDownIb.setOnClickListener {
-            finish()
-        }
-        binding.songMiniplayerIv.setOnClickListener {
-            setPlayerStatus(true)
-        }
-        binding.songPauseIv.setOnClickListener {
-            setPlayerStatus(false)
-        }
-        if(intent.hasExtra("title")&&intent.hasExtra("singer")){
-            binding.songMusicTitleTv.text=intent.getStringExtra("title")
-            binding.songSingerNameTv.text=intent.getStringExtra("singer")
+    private fun initPlayPauseBtn() {
+        with(binding) {
+            songMiniplayerIv.setOnClickListener {
+                songMiniplayerIv.visibility = View.GONE
+                songPauseIv.visibility = View.VISIBLE
+                setPlayerStatus(true)
+            }
+            songPauseIv.setOnClickListener {
+                songMiniplayerIv.visibility = View.VISIBLE
+                songPauseIv.visibility = View.GONE
+                setPlayerStatus(false)
+            }
         }
     }
-    private fun initRandomBtn(){
-        with(binding){
+
+    private fun initRandomBtn() {
+        with(binding) {
             songRandomOffIv.setOnClickListener {
                 songRandomOffIv.visibility = View.GONE
                 songRandomOnIv.visibility = View.VISIBLE
@@ -92,57 +95,65 @@ class SongActivity : AppCompatActivity() {
             }
         }
     }
-    private fun setPlayerStatus(isPlaying : Boolean) {
-        song.isPlaying = isPlaying
+
+    private fun setPlayerStatus(isPlaying: Boolean) {
+        songs[nowPos].isPlaying = isPlaying
         timer.isPlaying = isPlaying
 
-        if(isPlaying){
-            binding.songMiniplayerIv.visibility= View.GONE
-            binding.songPauseIv.visibility=View.VISIBLE
+        if (isPlaying) {
+            binding.songMiniplayerIv.visibility = View.GONE
+            binding.songPauseIv.visibility = View.VISIBLE
             mediaPlayer?.start()
-        }
-        else {
-            binding.songMiniplayerIv.visibility=View.VISIBLE
-            binding.songPauseIv.visibility=View.GONE
-            if(mediaPlayer?.isPlaying == true){
+        } else {
+            binding.songMiniplayerIv.visibility = View.VISIBLE
+            binding.songPauseIv.visibility = View.GONE
+            if (mediaPlayer?.isPlaying == true) {
                 mediaPlayer?.pause()
             }
         }
     }
 
-    private fun initSong(){
-        if(intent.hasExtra("title") && intent.hasExtra("singer")){
-            song = Song(
-                intent.getStringExtra("title")!!,
-                intent.getStringExtra("singer")!!,
-                intent.getIntExtra("second",0),
-                intent.getIntExtra("playTime", 0),
-                intent.getBooleanExtra("isPlaying",false),
-                intent.getStringExtra("music")!!
-            )
+    private fun moveSong(direct: Int) {
+        if (nowPos + direct < 0) {
+            Toast.makeText(this, "first song", Toast.LENGTH_SHORT).show()
+            return
         }
+        if (nowPos + direct >= songs.size) {
+            Toast.makeText(this, "last song", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        nowPos += direct
+
+        timer.interrupt()
         startTimer()
+
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        try {
+            if (songs[nowPos].playTime > 0) {
+                setPlayer(songs[nowPos])
+            } else {
+                Toast.makeText(this, "Invalid song playtime", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error in moveSong: ${e.message}")
+        }
     }
 
-    private fun setPlayer(song:Song){
-        binding.songMusicTitleTv.text=intent.getStringExtra("title")!!
-        binding.songSingerNameTv.text=intent.getStringExtra("singer")!!
-        binding.songStartTimeTv.text = String.format("%02d:%02d", song.second / 60, song.second % 60)
-        binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime / 60, song.playTime % 60)
-        binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
-        val music = resources.getIdentifier(song.music,"raw",this.packageName)
-        mediaPlayer = MediaPlayer.create(this,music)
-        setPlayerStatus(song.isPlaying)
+    private fun getPlayingSongPosition(songId: Int): Int {
+        for (i in 0 until songs.size) {
+            if (songs[i].id == songId) {
+                return i
+            }
+        }
+        return 0
     }
 
-    private fun startTimer(){
-        timer = Timer(song.playTime,song.isPlaying)
-        timer.start()
-    }
+    inner class Timer(private val playTime: Int, var isPlaying: Boolean = true) : Thread() {
 
-    inner class Timer(private val playTime: Int,var isPlaying: Boolean=true):Thread(){
-
-        private var second : Int = 0
+        private var second: Int = 0
         private var mills: Float = 0f
 
         override fun run() {
@@ -171,31 +182,146 @@ class SongActivity : AppCompatActivity() {
                         }
                     }
                 }
-            }catch(e:InterruptedException){
-                Log.d("Song", "쓰레드가 죽었습니다. ${e.message}")
+            } catch (e: InterruptedException) {
+                Log.d("SongActivity", "쓰레드가 죽었습니다. ${e.message}")
+            } catch (e: Exception) {
+                Log.e("SongActivity", "Error in timer thread: ${e.message}")
             }
         }
     }
-    // 사용자가 포커스를 잃었을 때 음악이 중지
+
     override fun onPause() {
         super.onPause()
+        Log.d("SongActivity", "onPause called")
         setPlayerStatus(false)
-        song.second = ((binding.songProgressSb.progress * song.playTime)/100)/1000
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE) //SharedPreference란 내부 저장소에 데이터를 저장할 수 있도록 함. 앱이 종료되었다가 다시 실행되도 저장된 값을 다시 사용할 수 있음
-        val editor = sharedPreferences.edit() //에디터
-         //제이슨 포멧으로 한 번에 넣어줌. 제이슨이란 데이터 표현 표준. 보통 자바 객체를 다른 곳으로 전달할 때 제이슨 포멧으로 보냄
-         //song 객체를 제이슨으로 변환 시키기 위해 지슨을 사용. 자바 객체를 제이슨으로, 제이슨을 자바 객체로 변환 시켜줌
-        val songJson = gson.toJson(song)
-        editor.putString("songData", songJson)
+        songs[nowPos].second =
+            if (songs[nowPos].playTime > 0) ((binding.songProgressSb.progress * songs[nowPos].playTime) / 100) / 1000 else 0
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
 
-        editor.apply() //apply까지 해야 실제 내부 저장소에 저장이 됨
+        editor.putInt("songId", songs[nowPos].id)
+
+        editor.apply()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        timer.interrupt()
-        mediaPlayer?.release() //미디어플레이어가 갖고 있던 리소스 해제
-        mediaPlayer = null //미디어 플레이어 해제
+        Log.d("SongActivity", "onDestroy called")
+        try {
+            timer.interrupt()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error in onDestroy: ${e.message}")
+        }
     }
 
+    private fun initPlaylist() {
+        try {
+            songDB = SongDatabase.getInstance(this)!!
+            songs.addAll(songDB.songDao().getSongs())
+
+            if (songs.isEmpty()) {
+                Log.e("SongActivity", "플레이리스트가 비어 있습니다.")
+            } else {
+                Log.d("SongActivity", "플레이리스트 초기화 완료: ${songs.size}곡")
+            }
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error initializing playlist: ${e.message}")
+        }
+    }
+
+    private fun initSong() {
+        if (songs.isEmpty()) {
+            Log.e("SongActivity", "플레이리스트가 비어 있습니다. initSong을 실행할 수 없습니다.")
+            return
+        }
+
+        val spf = getSharedPreferences("song", MODE_PRIVATE)
+        val songId = spf.getInt("songId", 0)
+
+        nowPos = getPlayingSongPosition(songId)
+
+        if (nowPos >= songs.size) {
+            nowPos = 0
+        }
+
+        Log.d("SongActivity", "now Song ID: ${songs[nowPos].id}")
+
+        try {
+            startTimer()
+            setPlayer(songs[nowPos])
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error in initSong: ${e.message}")
+        }
+    }
+
+    private fun setPlayer(song: Song) {
+        try {
+            binding.songMusicTitleTv.text = song.title
+            binding.songSingerNameTv.text = song.singer
+            binding.songStartTimeTv.text = String.format("%02d:%02d", song.second / 60, song.second % 60)
+            binding.songEndTimeTv.text = String.format("%02d:%02d", song.playTime / 60, song.playTime % 60)
+            binding.songAlbumIv.setImageResource(song.coverImg ?: R.drawable.img_album_exp2)
+
+            if (song.playTime > 0) {
+                binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
+            } else {
+                binding.songProgressSb.progress = 0
+            }
+
+            val music = resources.getIdentifier(song.music, "raw", this.packageName)
+            mediaPlayer = MediaPlayer.create(this, music)
+
+            if (song.isLike) {
+                binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
+            } else {
+                binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
+            }
+
+            setPlayerStatus(song.isPlaying)
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error in setPlayer: ${e.message}")
+        }
+    }
+
+
+    private fun initClickListner() {
+        binding.songDownIb.setOnClickListener {
+            finish()
+        }
+        binding.songMiniplayerIv.setOnClickListener {
+            setPlayerStatus(true)
+        }
+        binding.songPauseIv.setOnClickListener {
+            setPlayerStatus(false)
+        }
+
+        binding.songNextIv.setOnClickListener {
+            moveSong(+1)
+        }
+
+        binding.songPreviousIv.setOnClickListener {
+            moveSong(-1)
+        }
+
+        binding.songLikeIv.setOnClickListener {
+            setLike(songs[nowPos].isLike)
+        }
+    }
+
+    private fun setLike(isLike: Boolean) {
+        try {
+            songs[nowPos].isLike = !isLike
+            songDB.songDao().updateIsLikeById(!isLike, songs[nowPos].id)
+
+            if (!isLike) {
+                binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
+            } else {
+                binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
+            }
+        } catch (e: Exception) {
+            Log.e("SongActivity", "Error in setLike: ${e.message}")
+        }
+    }
 }
