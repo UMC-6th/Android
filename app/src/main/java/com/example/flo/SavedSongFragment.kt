@@ -1,6 +1,5 @@
 package com.example.flo
 
-import SongDatabase
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +32,7 @@ class SavedSongFragment : Fragment() {
         binding.lockerSavedSongRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val likedSongs = songDB.songDao().getLikedSongs(true) as ArrayList<Song>
-        val songRVAdapter = SavedSongRVAdapter(likedSongs)  // 어댑터에 데이터 전달
+        val songRVAdapter = SavedSongRVAdapter()  // 어댑터에 데이터 전달
 
         songRVAdapter.setMyItemClickListener(object : SavedSongRVAdapter.MyItemClickListener{
             override fun onRemoveSong(songId: Int) {

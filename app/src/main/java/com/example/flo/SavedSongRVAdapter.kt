@@ -30,6 +30,7 @@ class SavedSongRVAdapter(private val songs: ArrayList<Song> = ArrayList()) :
             mItemClickListener.onRemoveSong(songs[position].id)
             removeSong(position)
         }
+
     }
 
     override fun getItemCount(): Int = songs.size
