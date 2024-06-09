@@ -26,20 +26,20 @@ class LoginActivity: AppCompatActivity(), LoginView {
         setContentView(binding.root)
 
         // 회원가입 버튼 클릭 리스너 설정
-        binding.loginSignUpTv.setOnClickListener{
+        binding.loginSignUpTv.setOnClickListener {
             startActivity(Intent(this, SignUpActivity::class.java))
         }
 
         // 로그인 버튼 클릭 리스너 설정
-        binding.loginSignInBtn.setOnClickListener{
+        binding.loginSignInBtn.setOnClickListener {
             login()
         }
 
         // 카카오 로그인 버튼 클릭 리스너 설정
-        binding.loginKakakoLoginIv.setOnClickListener{
+        binding.loginKakakoLoginIv.setOnClickListener {
             loginWithKakao()
         }
-        binding.loginCloseIv.setOnClickListener{
+        binding.loginCloseIv.setOnClickListener {
             closeLoginAndOpenMain()
         }
     }
@@ -76,19 +76,22 @@ class LoginActivity: AppCompatActivity(), LoginView {
         editor.apply()
     }
 
-    private fun login(){
+    private fun login() {
         // 입력값 검증
-        if(binding.loginIdEt.text.toString().isEmpty() || binding.loginDirectInputEt.text.toString().isEmpty()){
+        if (binding.loginIdEt.text.toString()
+                .isEmpty() || binding.loginDirectInputEt.text.toString().isEmpty()
+        ) {
             Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
-        if(binding.loginPasswordEt.text.toString().isEmpty()){
+        if (binding.loginPasswordEt.text.toString().isEmpty()) {
             Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
         // 이메일 및 비밀번호 가져오기
-        val email : String = binding.loginIdEt.text.toString() + "@" + binding.loginDirectInputEt.text.toString()
+        val email: String =
+            binding.loginIdEt.text.toString() + "@" + binding.loginDirectInputEt.text.toString()
         val pwd: String = binding.loginPasswordEt.text.toString()
 
         val authService = AuthService()
@@ -103,21 +106,21 @@ class LoginActivity: AppCompatActivity(), LoginView {
         finish()  // 현재 액티비티 종료
     }
 
-    private fun startMainActivity(){
+    private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
-    private fun saveJwt2(jwt:String){
+    private fun saveJwt2(jwt: String) {
         val spf = getSharedPreferences("auth2", MODE_PRIVATE)
         val editor = spf.edit()
 
-        editor.putString("jwt",jwt)
+        editor.putString("jwt", jwt)
         editor.apply()
     }
 
     override fun onLoginSuccess(code: Int, result: Result) {
-        when(code){
+        when (code) {
             1000 -> {
                 saveJwt2(result.jwt)
                 startMainActivity()
