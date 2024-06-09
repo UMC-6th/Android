@@ -13,17 +13,13 @@ import com.example.flo.Look.LookFragment
 import com.example.flo.Song.Song
 import com.example.flo.Song.SongActivity
 import com.example.flo.Song.SongDatabase
-import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.common.util.Utility
-
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
     private var song: Song = Song()
     private var gson: Gson = Gson()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         Log.d("MAIN/JWT_TO_SERVER", getJwt().toString())
-
     }
 
     private fun getJwt(): String? {
@@ -111,7 +106,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setMiniPlayer(song: Song) {
         binding.mainMiniplayerTitleTv.text = song.title
         binding.mainMiniplayerSingerTv.text = song.singer
@@ -147,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         songDB.albumDao().insert(Album(1, "Armageddon - The 1st Album", "AESPA", R.drawable.img_album_armageddon))
         songDB.albumDao().insert(Album(2, "KISS OF LIFE", "KISS OF LIFE", R.drawable.img_album_countdown))
         songDB.albumDao().insert(Album(3, "성장 - THE 3RD MINI ALBUM", "도경수", R.drawable.img_album_mars))
-        songDB.albumDao().insert(Album(4, "How Sweet", "뉴진스 (Newjeans", R.drawable.img_album_howsweet))
+        songDB.albumDao().insert(Album(4, "How Sweet", "뉴진스 (Newjeans)", R.drawable.img_album_howsweet))
         songDB.albumDao().insert(Album(5, "TWS : 1st Mini Album 'Sparkling Blue'", "TWS", R.drawable.img_album_bff))
 
         val _albums = songDB.albumDao().getAlbums()

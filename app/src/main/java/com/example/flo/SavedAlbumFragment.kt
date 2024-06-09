@@ -22,22 +22,19 @@ class SavedAlbumFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLockerSavedalbumBinding.inflate(inflater, container, false)
-
         albumDB = SongDatabase.getInstance(requireContext())!!
-
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        initRecyclerview()
+        initRecyclerView()
     }
 
-    private fun initRecyclerview(){
+    private fun initRecyclerView(){
         binding.lockerSavedSongRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         val albumRVAdapter = AlbumLockerRVAdapter()
-        //리스너 객체 생성 및 전달
 
         albumRVAdapter.setMyItemClickListener(object : AlbumLockerRVAdapter.MyItemClickListener{
             override fun onRemoveSong(songId: Int) {
