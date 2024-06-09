@@ -39,6 +39,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_flo_logo_iv" />
 
+    <!-- 아이디 입력란 밑에 밑줄 -->
     <View
         android:id="@+id/login_id_underscore_view"
         android:layout_width="0dp"
@@ -47,7 +48,7 @@
         android:background="#a8a8a8"
         app:layout_constraintEnd_toEndOf="@+id/login_id_et"
         app:layout_constraintStart_toStartOf="@+id/login_id_et"
-        app:layout_constraintTop_toBottomOf="@+id/login_id_et"/>
+        app:layout_constraintTop_toBottomOf="@+id/login_id_et" />
 
     <TextView
         android:id="@+id/login_at_sign_tv"
@@ -77,6 +78,7 @@
         app:layout_constraintStart_toEndOf="@+id/login_at_sign_tv"
         app:layout_constraintTop_toTopOf="@+id/login_id_et" />
 
+    <!-- 직접 입력란 밑에 밑줄 -->
     <View
         android:id="@+id/login_address_underscore_view"
         android:layout_width="0dp"
@@ -85,7 +87,7 @@
         android:background="#a8a8a8"
         app:layout_constraintEnd_toEndOf="@+id/login_direct_input_et"
         app:layout_constraintStart_toStartOf="@+id/login_direct_input_et"
-        app:layout_constraintTop_toBottomOf="@+id/login_direct_input_et"/>
+        app:layout_constraintTop_toBottomOf="@+id/login_direct_input_et" />
 
     <ImageView
         android:id="@+id/login_email_list_iv"
@@ -112,6 +114,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_id_underscore_view" />
 
+    <!-- 비밀번호 입력란 밑에 밑줄 -->
     <View
         android:id="@+id/login_password_underscore_view"
         android:layout_width="0dp"
@@ -120,7 +123,7 @@
         android:background="#a8a8a8"
         app:layout_constraintEnd_toEndOf="@+id/login_password_et"
         app:layout_constraintStart_toStartOf="@+id/login_password_et"
-        app:layout_constraintTop_toBottomOf="@+id/login_password_et"/>
+        app:layout_constraintTop_toBottomOf="@+id/login_password_et" />
 
     <ImageView
         android:id="@+id/login_hide_password_iv"
@@ -261,24 +264,15 @@
         app:layout_constraintTop_toBottomOf="@+id/login_phone_number_login_layout">
 
         <ImageView
-            android:id="@+id/login_naver_login_iv"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/naver_44" />
-
-        <ImageView
             android:id="@+id/login_kakako_login_iv"
-            android:layout_width="45dp"
+            android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
-            android:src="@drawable/kakako_44" />
+            android:src="@drawable/kakao_login" />
 
-        <ImageView
-            android:id="@+id/login_apple_login_iv"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/apple_44" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

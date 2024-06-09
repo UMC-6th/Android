@@ -10,6 +10,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.example.flo.Album.Album
+import com.example.flo.Album.AlbumFragment
+import com.example.flo.Album.AlbumRVAdapter
+import com.example.flo.Banner.BannerFragment
+import com.example.flo.Banner.BannerVPAdapter
+import com.example.flo.Indicator.IndicatorFragment
+import com.example.flo.Indicator.IndicatorVPAdapter
+import com.example.flo.Song.SongDatabase
 import com.example.flo.databinding.FragmentHomeBinding
 import com.google.gson.Gson
 
